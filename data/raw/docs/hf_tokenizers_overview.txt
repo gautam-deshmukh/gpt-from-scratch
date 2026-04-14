@@ -1,0 +1,14 @@
+# Tokenizers
+
+Fast state-of-the-art tokenizers, optimized for both research and production.
+
+Tokenizers provides an implementation of today's most used tokenizers, with a focus on performance and versatility. These tokenizers are also used in Transformers.
+
+# Main features:
+
+- Train new vocabularies and tokenize, using today's most used tokenizers.
+- Extremely fast (both training and tokenization), thanks to the Rust implementation.
+- Easy to use, but also extremely versatile.
+- Designed for both research and production.
+- Full alignment tracking. Even with destructive normalization, it is always possible to get the part of the original sentence that corresponds to any token.
+- Does all the pre-processing: truncation, padding, and adding the special tokens your model needs.

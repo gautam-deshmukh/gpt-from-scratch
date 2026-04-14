@@ -1,0 +1,42 @@
+# Training a new tokenizer from an old one
+
+Training a tokenizer is a statistical process that tries to identify which subwords are best for a given corpus. Instead of starting from scratch, we can often train a new tokenizer by reusing the configuration of an existing one and only learning a new vocabulary on our own data.
+
+There is an API in Transformers that lets us do this: AutoTokenizer.train_new_from_iterator. This method takes an existing tokenizer and an iterator over text, and returns a new tokenizer with the same algorithm and special tokens but a vocabulary adapted to the new corpus.
+
+A typical workflow looks like this:
+
+1. Assemble a corpus of text in the domain or language you care about.
+2. Load a base tokenizer whose behavior you want to reuse.
+3. Call train_new_from_iterator with your corpus and a target vocabulary size.
+4. Save and reuse the trained tokenizer.
+
+For example, to train a GPT-2 style tokenizer on a new corpus:
+
+from transformers import AutoTokenizer
+
+# Load the base GPT-2 tokenizer
+base_tokenizer = AutoTokenizer.from_pretrained("gpt2")
+
+# Define an iterator over your training corpus
+def get_training_corpus():
+    # Yield batches of text strings from your dataset
+    # for example, lines from files or code snippets
+    yield ["some text", "more text from your domain"]
+
+# Train a new tokenizer with a custom vocabulary size
+new_tokenizer = base_tokenizer.train_new_from_iterator(
+    get_training_corpus(),
+    vocab_size=5000,
+)
+
+# Save the tokenizer so it can be reused
+new_tokenizer.save_pretrained("my-new-tokenizer")
+
+The important points are:
+
+- We reuse the tokenization algorithm and special tokens from the base tokenizer.
+- Only the vocabulary is retrained on the new corpus.
+- The resulting tokenizer can be loaded with AutoTokenizer.from_pretrained just like any other checkpoint.
+
+This approach is useful when you want a tokenizer adapted to a specialized domain while keeping behavior compatible with a well-known model family.

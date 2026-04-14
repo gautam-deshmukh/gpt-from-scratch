@@ -1,0 +1,159 @@
+# Tokenizers
+
+Tokenizers are one of the core components of the NLP pipeline. They serve one purpose: to translate text into data that can be processed by the model. Models can only process numbers, so tokenizers need to convert our text inputs to numerical data. In this section, we will explore what happens in the tokenization pipeline.
+
+In NLP tasks, the data that is generally processed is raw text. Here is an example of such text:
+
+Jim Henson was a puppeteer
+
+However, models can only process numbers, so we need to find a way to convert the raw text to numbers. That is what the tokenizers do, and there are many ways to go about this. The goal is to find the most meaningful representation — one that makes sense to the model — and, if possible, the smallest representation.
+
+We will look at several tokenization algorithms and answer common questions about tokenization.
+
+## Word-based
+
+The first type of tokenizer that comes to mind is word-based. It is generally easy to set up and use with only a few rules, and it often yields decent results.
+
+There are different ways to split the text. For example, we can use whitespace to tokenize the text into words by applying Python's split function:
+
+from transformers import AutoTokenizer
+
+tokenized_text = "Jim Henson was a puppeteer".split()
+print(tokenized_text)
+
+Output:
+
+['Jim', 'Henson', 'was', 'a', 'puppeteer']
+
+There are also variations of word tokenizers that have extra rules for punctuation. With this kind of tokenizer, we can end up with large vocabularies, where the vocabulary is defined by the total number of independent tokens in the corpus.
+
+Each word gets assigned an ID, starting from 0 and going up to the size of the vocabulary. The model uses these IDs to identify each word.
+
+If we want to completely cover a language with a word-based tokenizer, we need an identifier for each word in the language, which generates a huge number of tokens. For example, there are over 500,000 words in English, so to build a map from each word to an input ID we would need to track that many IDs. Furthermore, words like "dog" and "dogs" are represented differently, and the model has no inherent way of knowing they are related. The same applies to pairs like "run" and "running".
+
+We also need a custom token to represent words that are not in our vocabulary. This is the unknown token, often represented as "[UNK]" or "<unk>". It is generally a bad sign if the tokenizer produces many unknown tokens, because that means the tokenizer could not retrieve a sensible representation of a word and information is lost. The goal when crafting the vocabulary is to design it so that the tokenizer produces as few unknown tokens as possible.
+
+One way to reduce the number of unknown tokens is to go one level deeper, using a character-based tokenizer.
+
+## Character-based
+
+Character-based tokenizers split the text into characters rather than words. This has two primary benefits:
+
+- The vocabulary is much smaller.
+- There are far fewer out-of-vocabulary (unknown) tokens, since every word can be built from characters.
+
+This approach is not perfect either. Since the representation is now based on characters, one could argue that it is less meaningful: each character does not mean much on its own, whereas words carry more meaning. This also depends on the language; for example, in Chinese, each character carries more information than a character in a Latin language.
+
+Another issue is that we end up with a large number of tokens to be processed by the model: a word that would be a single token with a word-based tokenizer can easily become many tokens when converted into characters.
+
+To get the best of both worlds, we can use a third technique that combines the two approaches: subword tokenization.
+
+## Subword tokenization
+
+Subword tokenization algorithms rely on the principle that frequently used words should not be split into smaller subwords, but rare words should be decomposed into meaningful subwords.
+
+For instance, "annoyingly" might be considered a rare word and decomposed into "annoying" and "ly". These are both likely to appear more frequently as standalone subwords, while the meaning of "annoyingly" is preserved by the combination of "annoying" and "ly".
+
+These subwords provide useful semantic information. For example, "tokenization" can be split into "token" and "ization", two tokens that each have semantic meaning and are space-efficient (only two tokens are needed to represent a long word). This allows us to have good coverage with small vocabularies and very few unknown tokens.
+
+This approach is especially useful in agglutinative languages such as Turkish, where one can form long complex words by stringing together subwords.
+
+### More techniques
+
+There are many more tokenization techniques, such as:
+
+- Byte-level BPE, used in GPT-2
+- WordPiece, used in BERT
+- SentencePiece or Unigram, used in several multilingual models
+
+You now have enough context about how tokenizers work to get started with the API.
+
+## Loading and saving
+
+Loading and saving tokenizers is as simple as it is with models. It is based on two methods: from_pretrained and save_pretrained. These methods load or save the algorithm used by the tokenizer (similar to the architecture of a model) as well as its vocabulary (similar to the weights of a model).
+
+Loading the BERT tokenizer trained with the same checkpoint as BERT is done like this:
+
+from transformers import BertTokenizer
+
+tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
+
+Similar to AutoModel, the AutoTokenizer class will select the proper tokenizer class based on the checkpoint name:
+
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+
+We can now use the tokenizer as follows:
+
+tokenizer("Using a Transformer network is simple")
+
+Example output:
+
+{'input_ids': [101, 7993, 170, 11303, 1200, 2443, 1110, 3014, 102],
+ 'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 0],
+ 'attention_mask': [1, 1, 1, 1, 1, 1, 1, 1, 1]}
+
+Saving a tokenizer is identical to saving a model:
+
+tokenizer.save_pretrained("directory_on_my_computer")
+
+We will talk more about token_type_ids and attention_mask later. First, we look at how input_ids are generated by examining the intermediate methods of the tokenizer.
+
+## Encoding
+
+Translating text to numbers is known as encoding. Encoding is done in two steps: tokenization, followed by conversion to input IDs.
+
+First, the text is split into tokens (words, parts of words, punctuation symbols, etc.). There are multiple rules that can govern that process, which is why we instantiate the tokenizer with the name of the model, to make sure we use the same rules that were used when the model was pretrained.
+
+Second, the tokens are converted into numbers so that we can build a tensor and feed it to the model. To do this, the tokenizer has a vocabulary, which is what we download when we call from_pretrained. Again, we must use the same vocabulary that was used during pretraining.
+
+In practice, you usually call the tokenizer directly on your inputs, and it will perform both steps. Here we separate them to inspect the intermediate results.
+
+### Tokenization
+
+The tokenization process is handled by the tokenize method:
+
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+
+sequence = "Using a Transformer network is simple"
+tokens = tokenizer.tokenize(sequence)
+
+print(tokens)
+
+Output:
+
+['Using', 'a', 'transform', '##er', 'network', 'is', 'simple']
+
+This tokenizer is a subword tokenizer: it splits words until it obtains tokens that appear in its vocabulary. Here, "transformer" is split into "transform" and "##er".
+
+### From tokens to input IDs
+
+The conversion to input IDs is handled by convert_tokens_to_ids:
+
+ids = tokenizer.convert_tokens_to_ids(tokens)
+
+print(ids)
+
+Output:
+
+[7993, 170, 11303, 1200, 2443, 1110, 3014]
+
+These outputs, once converted to tensors, can be used as inputs to a model.
+
+## Decoding
+
+Decoding reverses the process: from vocabulary indices, we recover a string. This is done with decode:
+
+decoded_string = tokenizer.decode([7993, 170, 11303, 1200, 2443, 1110, 3014])
+print(decoded_string)
+
+Output:
+
+'Using a Transformer network is simple'
+
+The decode method not only converts indices back to tokens, but also joins subwords that belong to the same original word to produce a readable sentence.
+
+By now you should understand the basic operations a tokenizer can perform: tokenization, conversion to IDs, and converting IDs back to a string.

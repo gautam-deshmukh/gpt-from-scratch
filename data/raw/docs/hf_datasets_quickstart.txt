@@ -1,0 +1,35 @@
+# Quickstart
+
+This quickstart is intended for developers who are ready to dive into the code and see an example of how to integrate Datasets into their model training workflow. If you are a beginner, we recommend starting with the tutorials, where you will get a more thorough introduction.
+
+Each dataset is unique, and depending on the task, some datasets may require additional steps to prepare it for training. But you can always use Datasets tools to load and process a dataset. The fastest and easiest way to get started is by loading an existing dataset from the Hugging Face Hub. There are thousands of datasets to choose from, spanning many tasks. Choose the type of dataset you want to work with, and get started.
+
+Audio:
+- Resample an audio dataset and get it ready for a model to classify what type of banking issue a speaker is calling about.
+
+Vision:
+- Apply data augmentation to an image dataset and get it ready for a model to diagnose disease in bean plants.
+
+NLP:
+- Tokenize a dataset and get it ready for a model to determine whether a pair of sentences have the same meaning.
+
+Tip: You can learn more about loading remote or local datasets, tools for cleaning up a dataset, and creating your own dataset in the Hugging Face course.
+
+Start by installing Datasets:
+
+pip install datasets
+
+Datasets also supports audio and image data formats.
+
+To work with audio datasets, install the audio extra:
+
+pip install datasets[audio]
+
+To work with image datasets, install the vision extra:
+
+pip install datasets[vision]
+
+Besides Datasets, make sure your preferred machine learning framework is installed:
+
+pip install torch
+pip install tensorflow
