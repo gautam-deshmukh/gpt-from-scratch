@@ -1,0 +1,51 @@
+Project: GPT from scratch notes
+Owner: Gautam Deshmukh
+Purpose: Running log of design decisions, experiments, and reading related to this repo.
+
+== Day 1: Repo setup ==
+- Created the "gpt-from-scratch" repository and basic Python project structure.
+- Set up a clean data layout under data/raw with subfolders: docs, tutorials, abstracts, notes.
+- Decided to keep all seed corpus data in plain UTF-8 text files for simplicity and transparency.
+
+== Day 2: Tooling and environment ==
+- Configured a minimal Python environment for experimentation (no heavy frameworks yet).
+- Chose to start with custom tokenizer and model code rather than using high-level training libraries, to learn internals.
+- Planned to gradually introduce libraries (numpy, torch) only when they become necessary.
+
+== Day 3: Corpus plan ==
+- Designed the initial corpus to focus on small, high-signal ML texts: tokenizer tutorials, datasets docs, and a couple of research abstracts.
+- Decided to avoid large noisy dumps (e.g., full web scrapes) in early experiments, to make debugging easier.
+- Created placeholder .gitkeep files in each data/raw subfolder so the directory structure is tracked in Git.
+
+== Day 4: Initial corpus content ==
+- Added open-source Hugging Face tutorials on tokenizers and datasets as seed training data, saved in data/raw/docs and data/raw/tutorials.
+- Wrote short, cleaned summaries for:
+  - Tokenizers overview (hf_tokenizers_overview.txt)
+  - Datasets quickstart (hf_datasets_quickstart.txt)
+  - Tokenizers course snippet (hf_tokenizers_course.txt)
+  - Training a new tokenizer from an old one (hf_train_tokenizer_tutorial.txt).
+- Added short, paraphrased abstracts for:
+  - "Attention Is All You Need"
+  - A retention-layer long-range sequence modeling paper, in data/raw/abstracts.
+- Created this project_notes.txt file as a lightweight log of decisions and experiment ideas.
+
+== Day 5: Corpus inspection and first tokenizer ==
+- Wrote scripts/inspect_corpus.py to load all .txt files under data/raw and print basic stats (total characters, unique characters, top character frequencies).
+- Confirmed the corpus loads correctly using python3 and that the directory layout works as expected.
+- Implemented scripts/build_char_tokenizer.py to build a simple character-level tokenizer directly from the corpus text.
+- Verified the tokenizer with a round-trip encode/decode test on a short sample sentence.
+- Built and saved a reusable character-level tokenizer to data/processed/char_tokenizer.json, with vocab size 82, and verified encode/decode after reload.
+
+== Day 6: Sequence dataset ==
+- Implemented scripts/build_dataset.py to load the full corpus, encode it with the saved CharTokenizer, and slice it into fixed-length (seq_len=32) sequences.
+- Each dataset example is (x, y) where y is x shifted by one character, matching the standard next-token language modeling objective.
+- Verified dataset statistics (corpus length, encoded tokens, number of examples) and inspected the first decoded (x, y) pair.
+- Installed PyTorch and wrapped the character-level dataset in a PyTorch DataLoader producing (batch_size, seq_len) batches for next-token prediction.
+- Implemented a tiny GPT-style model with token embeddings, positional embeddings, one causal self-attention layer, layer norm, and a linear output head.
+- Verified a full forward pass from dataloader batch to logits and next-token cross-entropy loss.
+
+== Ideas / TODO ==
+- Next: write a tiny script to load all files under data/raw and build a vocabulary/token-frequency table.
+- Later: experiment with different tokenization schemes (character-level vs BPE) on this corpus.
+- Eventually: implement a minimal GPT-style model and train on this curated corpus as a first end-to-end demo.
+- Note: keep this file as free-form notes; it is not used as model training data directly.
