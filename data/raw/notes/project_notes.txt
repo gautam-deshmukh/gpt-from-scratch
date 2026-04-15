@@ -47,6 +47,8 @@ Purpose: Running log of design decisions, experiments, and reading related to th
 - Saved the trained checkpoint to checkpoints/tiny_gpt_checkpoint.pt for later text generation and evaluation.
 - Ran inference from the trained checkpoint using the prompt "Attention" and generated sample text autoregressively.
 - Confirmed that the project now supports the full pipeline: corpus -> tokenizer -> dataset -> dataloader -> model -> training -> text generation.
+- Created a results/ folder with training_summary.txt and sample_generations.txt to document training behavior and inference outputs.
+- Began saving lightweight experiment artifacts to make the project easier to review and reproduce.
 
 == Ideas / TODO ==
 - Experiment with different tokenization schemes (character-level vs BPE) on this corpus.
