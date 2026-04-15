@@ -1,0 +1,3 @@
+Retention: A Long-Range Sequence Modeling Layer
+
+We introduce the retention layer, an alternative to self-attention for long-range sequence modeling. Retention uses gated, decaying memory to accumulate representations over time instead of computing full pairwise attention between tokens. This structure allows models to capture long-context dependencies with linear time and memory in sequence length. Experiments on language and sequence benchmarks show that retention-based models can match or surpass Transformer performance while scaling more efficiently to long inputs.

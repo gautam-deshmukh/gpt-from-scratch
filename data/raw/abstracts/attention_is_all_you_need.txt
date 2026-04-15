@@ -1,0 +1,4 @@
+Attention Is All You Need
+
+We propose the Transformer, a neural architecture based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. The model relies on multi-head self-attention and position-wise feed-forward layers to process sequences in parallel. On translation benchmarks, Transformers achieve state-of-the-art quality while being more parallelizable and requiring significantly less time to train than recurrent or convolutional models. We also show that scaling up the model size further improves performance.
+

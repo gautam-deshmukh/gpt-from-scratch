@@ -1,0 +1,16 @@
+Project: Tiny GPT sample generations
+Checkpoint: checkpoints/tiny_gpt_checkpoint.pt
+Tokenizer: data/processed/char_tokenizer.json
+Date: 2026-04-14
+
+== Prompt 1 ==
+Prompt:
+Attention
+
+Generated text:
+Attention t atokokeseke onis)or fritenizes ierendem nented thereco. -r.l yh okingery we aokheitetiegininizening cheue al te to an zas toizeduwas oh sus tokpers intinsetas to intang_ins ietok iindetous itavs th
+
+== Notes ==
+- The model produces character-level continuations that reflect some local spelling and stylistic patterns from the training corpus.
+- Output is partially coherent but still noisy, which is expected given the small model size, short training duration, and limited corpus size.
+- These samples are sufficient to demonstrate successful autoregressive generation from a trained checkpoint.

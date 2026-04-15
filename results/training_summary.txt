@@ -1,0 +1,39 @@
+Project: Tiny GPT training summary
+Model: TinyGPT (character-level)
+Date: 2026-04-14
+
+== Data ==
+- Corpus source: data/raw/**/*.txt
+- Tokenizer: data/processed/char_tokenizer.json
+- Vocabulary size: 82
+- Sequence length (block size): 32
+
+== Training configuration ==
+- Device: CPU
+- Batch size: 16
+- Embedding size: 64
+- Optimizer: AdamW
+- Learning rate: 1e-3
+- Training steps: 300
+
+== Observed loss ==
+- Step 0000: 4.6381
+- Step 0025: 3.1950
+- Step 0050: 3.1481
+- Step 0075: 2.9380
+- Step 0100: 2.7608
+- Step 0125: 2.9022
+- Step 0150: 2.8202
+- Step 0175: 2.6805
+- Step 0200: 2.7802
+- Step 0225: 2.6219
+- Step 0250: 2.6518
+- Step 0275: 2.6937
+
+== Result ==
+- Training reduced loss substantially from initialization, indicating that the model learned patterns from the small curated corpus.
+- Saved checkpoint: checkpoints/tiny_gpt_checkpoint.pt
+
+== Notes ==
+- This is a very small character-level transformer trained on a tiny corpus, so generated text is expected to be noisy and only partially coherent.
+- The main goal of this run was to verify a full end-to-end pipeline: corpus -> tokenizer -> dataset -> dataloader -> model -> training -> checkpoint.
