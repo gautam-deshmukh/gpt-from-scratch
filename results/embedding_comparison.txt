@@ -1,0 +1,36 @@
+Project: Embedding size comparison
+Date: 2026-04-15
+
+== Experiment ==
+Compared two tiny GPT runs on the same corpus and training setup, changing only embedding dimension.
+
+Shared settings:
+- Tokenization: character-level
+- Block size: 32
+- Batch size: 16
+- Training steps: 300
+- Optimizer: AdamW
+- Learning rate: 1e-3
+- Device: CPU
+
+Run A:
+- Embedding size: 64
+- Checkpoint: checkpoints/tiny_gpt_emb64.pt
+- Initial observed loss: 4.5282
+- Final observed loss: 2.7653
+
+Run B:
+- Embedding size: 128
+- Checkpoint: checkpoints/tiny_gpt_emb128.pt
+- Initial observed loss: 4.5734
+- Final observed loss: 2.7940
+
+== Observation ==
+- Both runs learned meaningful patterns from the corpus, with loss dropping from about 4.5 at initialization to the high-2.7 range after 300 steps.
+- In this short experiment, the 64-dimensional model performed slightly better than the 128-dimensional model based on final observed loss.
+- The difference was small, which is reasonable given the tiny dataset, short training run, and small model scale.
+- This suggests that simply increasing embedding size did not automatically improve short-run performance on this small curated corpus.
+
+== Takeaway ==
+- This experiment shows that the repository supports simple controlled hyperparameter comparisons, not just one-off training runs.
+- It also highlights an important modeling lesson: larger models are not always better when the dataset and training budget are both very limited.
