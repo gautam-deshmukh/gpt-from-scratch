@@ -1,0 +1,31 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Test / coverage caches
+.pytest_cache/
+.coverage
+.coverage.*
+
+# Misc caches
+.mypy_cache/
+.cache/
+
+# Local editor settings
+.vscode/
+.idea/
+
+# OS / logs
+*.log
