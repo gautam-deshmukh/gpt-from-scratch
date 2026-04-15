@@ -43,6 +43,8 @@ Purpose: Running log of design decisions, experiments, and reading related to th
 - Installed PyTorch and wrapped the character-level dataset in a PyTorch DataLoader producing (batch_size, seq_len) batches for next-token prediction.
 - Implemented a tiny GPT-style model with token embeddings, positional embeddings, one causal self-attention layer, layer norm, and a linear output head.
 - Verified a full forward pass from dataloader batch to logits and next-token cross-entropy loss.
+- Trained the tiny GPT model successfully on CPU, reducing loss from about 4.64 at initialization to about 2.65-2.78 over 300 steps.
+- Saved the trained checkpoint to checkpoints/tiny_gpt_checkpoint.pt for later text generation and evaluation.
 
 == Ideas / TODO ==
 - Experiment with different tokenization schemes (character-level vs BPE) on this corpus.
