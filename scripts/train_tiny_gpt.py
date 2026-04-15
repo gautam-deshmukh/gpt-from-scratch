@@ -1,6 +1,7 @@
 import json
 import math
 import pathlib
+import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,7 +10,6 @@ from torch.utils.data import Dataset, DataLoader
 DATA_ROOT = pathlib.Path("data/raw")
 TOKENIZER_PATH = pathlib.Path("data/processed/char_tokenizer.json")
 CHECKPOINT_DIR = pathlib.Path("checkpoints")
-CHECKPOINT_PATH = CHECKPOINT_DIR / "tiny_gpt_checkpoint.pt"
 
 
 def iter_text(root: pathlib.Path):
@@ -116,36 +116,41 @@ class TinyGPT(nn.Module):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n_embd", type=int, default=64)
+    parser.add_argument("--max_steps", type=int, default=300)
+    parser.add_argument("--batch_size", type=int, default=16)
+    parser.add_argument("--block_size", type=int, default=32)
+    parser.add_argument("--learning_rate", type=float, default=1e-3)
+    parser.add_argument("--print_every", type=int, default=25)
+    parser.add_argument("--checkpoint_name", type=str, default="tiny_gpt_checkpoint.pt")
+    args = parser.parse_args()
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("Using device:", device)
 
     text = load_corpus_text()
     tokenizer = CharTokenizer.load(TOKENIZER_PATH)
 
-    block_size = 32
-    batch_size = 16
-    n_embd = 64
-    learning_rate = 1e-3
-    max_steps = 300
-    print_every = 25
-
-    dataset = CharDataset(text, tokenizer, seq_len=block_size, stride=1)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    dataset = CharDataset(text, tokenizer, seq_len=args.block_size, stride=1)
+    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
 
     model = TinyGPT(
         vocab_size=tokenizer.vocab_size,
-        block_size=block_size,
-        n_embd=n_embd,
+        block_size=args.block_size,
+        n_embd=args.n_embd,
     ).to(device)
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
 
     CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+    checkpoint_path = CHECKPOINT_DIR / args.checkpoint_name
 
     model.train()
     step = 0
+    final_loss = None
 
-    while step < max_steps:
+    while step < args.max_steps:
         for x_batch, y_batch in dataloader:
             x_batch = x_batch.to(device)
             y_batch = y_batch.to(device)
@@ -155,24 +160,26 @@ def main():
             loss.backward()
             optimizer.step()
 
-            if step % print_every == 0:
-                print(f"step {step:04d} | loss {loss.item():.4f}")
+            final_loss = loss.item()
+
+            if step % args.print_every == 0:
+                print(f"step {step:04d} | loss {final_loss:.4f}")
 
             step += 1
-            if step >= max_steps:
+            if step >= args.max_steps:
                 break
 
     checkpoint = {
         "step": step,
         "model_state_dict": model.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(),
-        "loss": loss.item(),
+        "loss": final_loss,
         "vocab_size": tokenizer.vocab_size,
-        "block_size": block_size,
-        "n_embd": n_embd,
+        "block_size": args.block_size,
+        "n_embd": args.n_embd,
     }
-    torch.save(checkpoint, CHECKPOINT_PATH)
-    print(f"Saved checkpoint to {CHECKPOINT_PATH}")
+    torch.save(checkpoint, checkpoint_path)
+    print(f"Saved checkpoint to {checkpoint_path}")
 
 
 if __name__ == "__main__":
