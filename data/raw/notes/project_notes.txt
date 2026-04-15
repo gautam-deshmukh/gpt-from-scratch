@@ -45,7 +45,7 @@ Purpose: Running log of design decisions, experiments, and reading related to th
 - Verified a full forward pass from dataloader batch to logits and next-token cross-entropy loss.
 
 == Ideas / TODO ==
-- Next: write a tiny script to load all files under data/raw and build a vocabulary/token-frequency table.
-- Later: experiment with different tokenization schemes (character-level vs BPE) on this corpus.
-- Eventually: implement a minimal GPT-style model and train on this curated corpus as a first end-to-end demo.
+- Experiment with different tokenization schemes (character-level vs BPE) on this corpus.
+- Train the minimal GPT-style model on this curated corpus as a first end-to-end demo.
+- Add a small generation script to sample text from the trained model.
 - Note: keep this file as free-form notes; it is not used as model training data directly.
