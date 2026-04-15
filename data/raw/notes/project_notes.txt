@@ -45,6 +45,8 @@ Purpose: Running log of design decisions, experiments, and reading related to th
 - Verified a full forward pass from dataloader batch to logits and next-token cross-entropy loss.
 - Trained the tiny GPT model successfully on CPU, reducing loss from about 4.64 at initialization to about 2.65-2.78 over 300 steps.
 - Saved the trained checkpoint to checkpoints/tiny_gpt_checkpoint.pt for later text generation and evaluation.
+- Ran inference from the trained checkpoint using the prompt "Attention" and generated sample text autoregressively.
+- Confirmed that the project now supports the full pipeline: corpus -> tokenizer -> dataset -> dataloader -> model -> training -> text generation.
 
 == Ideas / TODO ==
 - Experiment with different tokenization schemes (character-level vs BPE) on this corpus.
